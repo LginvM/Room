@@ -67,13 +67,13 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
+
+
     val room_version = "2.6.1"
 
     implementation("androidx.room:room-runtime:$room_version")
 
-    // If this project only uses Java source, use the Java annotationProcessor
-    // No additional plugins are necessary
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
@@ -92,5 +92,9 @@ dependencies {
 
     // optional - Paging 3 Integration
     implementation("androidx.room:room-paging:$room_version")
+
+    implementation("androidx.navigation:navigation-compose:2.9.7")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
 
 }

@@ -55,9 +55,20 @@ interface ListDao{
     @Query("""
         SELECT * FROM items AS I INNER JOIN shopping_list AS S
         ON I.listIdFk = S.list_id INNER JOIN stores AS ST
-        ON I.storeIdFk = ST.store_id
+        ON I.storeIdFk = ST.store_id WHERE ST.listIdFk =:listId
     """)
-    fun ItemWithStoreAndList()
+    fun getItemsWithStoreAndListFiltered(listId:Int)
+            :Flow<List<ItemWithStoreAndList>>
+
+
+
+    @Query("""
+        SELECT * FROM items AS I INNER JOIN shopping_list AS S
+        ON I.listIdFk = S.list_id INNER JOIN stores AS ST
+        ON I.storeIdFk = ST.store_id WHERE I.item_id =:itemId
+    """)
+    fun getItemWithStoreAndListFiltered(itemId:Int)
+            :Flow<ItemWithStoreAndList>
 }
 
 data class ItemWithStoreAndList(
