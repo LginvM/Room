@@ -30,6 +30,8 @@ interface ItemDao{
     fun getItems(itemId:Int):Flow<Item>
 
 }
+
+@Dao
 interface StoreDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE) //при одинаковом id заменять на новый элемент
     suspend fun insert(store: Store)
@@ -52,21 +54,25 @@ interface ListDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertShoppingList(shoppingList: shoppingList)
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM items AS I INNER JOIN shopping_list AS S
-        ON I.listIdFk = S.list_id INNER JOIN stores AS ST
+        ON I.listId = S.list_id INNER JOIN stores AS ST
         ON I.storeIdFk = ST.store_id WHERE ST.listIdFk =:listId
-    """)
+    """
+    )
     fun getItemsWithStoreAndListFiltered(listId:Int)
             :Flow<List<ItemWithStoreAndList>>
 
 
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM items AS I INNER JOIN shopping_list AS S
-        ON I.listIdFk = S.list_id INNER JOIN stores AS ST
+        ON I.listId = S.list_id INNER JOIN stores AS ST
         ON I.storeIdFk = ST.store_id WHERE I.item_id =:itemId
-    """)
+    """
+    )
     fun getItemWithStoreAndListFiltered(itemId:Int)
             :Flow<ItemWithStoreAndList>
 }
