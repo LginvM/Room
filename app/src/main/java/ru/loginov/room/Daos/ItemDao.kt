@@ -43,7 +43,7 @@ interface StoreDao{
     suspend fun delete(item: Item)
 
     @Query("SELECT * FROM stores")
-    fun getAlllStore(): Flow<List<Store>>
+    fun getAllStore(): Flow<List<Store>>
 
     @Query("SELECT * FROM stores WHERE store_id =:storeId")
     fun getStore(storeId:Int):Flow<Store>
@@ -53,6 +53,16 @@ interface StoreDao{
 interface ListDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertShoppingList(shoppingList: shoppingList)
+
+    @Query(
+        """
+        SELECT * FROM items AS I INNER JOIN shopping_list AS S
+        ON I.listId = S.list_id INNER JOIN stores AS ST
+        ON I.storeIdFk = ST.store_id
+    """
+    )
+    fun getItemsWithStoreAndList()
+            :Flow<List<ItemWithStoreAndList>>
 
     @Query(
         """
