@@ -97,4 +97,14 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
 
+
+    //ViewModel
+
+    val lifecycle_version = "2.10.0"
+
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    // ViewModel utilities for Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+
 }
