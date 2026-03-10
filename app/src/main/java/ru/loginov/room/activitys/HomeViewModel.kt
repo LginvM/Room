@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ru.loginov.room.DAO.models.Item
+import ru.loginov.room.DAO.models.shoppingList
 import ru.loginov.room.Daos.ItemWithStoreAndList
 import ru.loginov.room.ui.Category
 import ru.loginov.room.ui.Graph
@@ -22,11 +24,46 @@ class HomeViewModel(
     var state by mutableStateOf(HomeState())
         private set
 
+    init {
+        getItems()
+    }
+
     private fun getItems(){
         viewModelScope.launch{
             repository.getItemWithListAndStore.collectLatest {
+                //collectLatest — это терминальный suspending-оператор из kotlinx.coroutines.flow, который для каждого нового значения потока запускает заданный блок кода,
+                // и если пока этот блок ещё выполняется приходит новое значение, он отменяет (прервывает) текущий блок и запускает его заново для этого нового значения.
+                // То есть всегда выполняется только обработка последнего пришедшего элемента.
 
+                state = state.copy(
+                    items = it
+                )
             }
+        }
+    }
+
+    fun deleteItem(item: Item){
+        viewModelScope.launch{
+            repository.deleteItem(item)
+        }
+    }
+
+    fun onCategoryChange(category: Category){
+        state=state.copy(category = category)
+        filterBy(category.id)
+    }
+
+    private fun filterBy(shoppingListId:Int){
+        if (shoppingListId!= 10001){
+            viewModelScope.launch {
+                repository.getItemWithStoreAndListFiltered(
+                    shoppingListId
+                ).collectLatest {
+                    state = state.copy(items = it)
+                }
+            }
+        }else{
+            getItems()
         }
     }
 
@@ -34,6 +71,6 @@ class HomeViewModel(
 
 data class HomeState(
     val items:List<ItemWithStoreAndList> = emptyList(),
-    val category: Category = Category(),
+    val category: Category,
     val itemChecked: Boolean = false
 )
