@@ -1,5 +1,5 @@
 package ru.loginov.room.ui
 
-class Category {
-
+class Category() {
+    val id = 0
 }

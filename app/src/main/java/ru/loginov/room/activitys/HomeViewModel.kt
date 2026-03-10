@@ -53,6 +53,14 @@ class HomeViewModel(
         filterBy(category.id)
     }
 
+    fun onItemCheckedChange(item: Item,isChecked: Boolean){
+        viewModelScope.launch{
+            repository.updateItem(
+                item = item.copy(isChecked = isChecked)
+            )
+        }
+    }
+
     private fun filterBy(shoppingListId:Int){
         if (shoppingListId!= 10001){
             viewModelScope.launch {
@@ -71,6 +79,6 @@ class HomeViewModel(
 
 data class HomeState(
     val items:List<ItemWithStoreAndList> = emptyList(),
-    val category: Category,
+    val category: Category = Category(),
     val itemChecked: Boolean = false
 )

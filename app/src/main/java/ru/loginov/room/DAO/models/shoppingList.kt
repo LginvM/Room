@@ -18,7 +18,7 @@ data class Item(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val itemName : String,
-    val category:String, //я ваще хз, но в видосе нет этого
+//    val category:String, //я ваще хз, но в видосе нет этого
     val qty: String,
     val listId:Int,
     val storeIdFk: Int,
