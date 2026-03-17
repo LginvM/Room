@@ -16,7 +16,7 @@ import ru.loginov.room.converters.DateConverter
 
 @Database(
     entities = [shoppingList::class,Item::class,Store::class],
-    version = 1,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class)
@@ -35,7 +35,7 @@ abstract class ShoppingListDatabase: RoomDatabase(){
                     context,
                     ShoppingListDatabase::class.java,
                     "shopping_db"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 return instance
             }

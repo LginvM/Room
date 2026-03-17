@@ -34,6 +34,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.1.1"
+    }
+
     kotlinOptions {
         jvmTarget = "11"
     }
@@ -55,6 +60,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.engage.core)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,11 +69,19 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+    implementation("androidx.compose.material:material-icons-core")
+    implementation("androidx.compose.material:material-icons-extended")
+
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
+
+    implementation("androidx.compose.material:material-icons-core:1.7.0") // Replace with the latest stable version or use a BOM
+
+    // For all extended icons (e.g., Icons.Extended.AddAlarm)
+    implementation("androidx.compose.material:material-icons-extended:1.7.0")
 
 
     val room_version = "2.6.1"
@@ -107,5 +121,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // ViewModel utilities for Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+
+        //material3
+    implementation("androidx.compose.material3:material3:1.4.0")
+    implementation("androidx.compose.material3:material3-window-size-class:1.4.0")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.5.0-alpha15")
 
 }
