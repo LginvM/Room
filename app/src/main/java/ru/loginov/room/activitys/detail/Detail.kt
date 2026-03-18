@@ -13,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -118,6 +119,16 @@ private fun DetailEntry(
                         }
                     }
                 }
+            }
+            TextButton(onClick = {
+                isNewEnabled = if (isNewEnabled){
+                onSaveStore.invoke()
+                !isNewEnabled
+            }else{
+                !isNewEnabled
+            } }
+            ) {
+                Text(text = if(isNewEnabled) "Save" else "New")
             }
 
         }
