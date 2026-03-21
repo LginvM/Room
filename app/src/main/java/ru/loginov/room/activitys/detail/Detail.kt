@@ -1,19 +1,27 @@
 package ru.loginov.room.activitys.detail
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
+import android.widget.Button
 import android.widget.DatePicker
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -31,17 +39,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ru.loginov.room.activitys.CategoryItem
 import ru.loginov.room.ui.Category
+import ru.loginov.room.ui.Utils
+import ru.loginov.room.ui.Utils.category
 import ru.loginov.room.ui.theme.Shapes
 import java.lang.String.format
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DetailScreen(
     id:Int,
@@ -49,7 +66,20 @@ fun DetailScreen(
 ){
     val viewModel = viewModel<DetailViewModel>(factory = DetailViewModelFactor(id))
     Scaffold {
-
+        DetailEntry(
+            state = viewModel.state,
+            onDateSelected = viewModel::onDateChange,
+            onStoreChange = viewModel::onStoreChange,
+            onItemChange = viewModel::onItemChange,
+            onQtyChange = viewModel::onQtyChange,
+            onCategoryChange = viewModel::onCategoryChange,
+            onDialogDismissed = viewModel::onScreenDialogDismissed,
+            onSaveStore = viewModel::addStore,
+            updateItem = {viewModel.updateShoppingItem(id)},
+            saveItem = viewModel::addShoppingItem
+        ){
+            navigateUp.invoke()
+        }
     }
 }
 
@@ -76,11 +106,11 @@ private fun DetailEntry(
     ){
         TextField(
             value = state.item,
-            onValueChange = { onItemChange },
+            onValueChange = { onItemChange(it) },
             label = {
                 Text(text = "Item")
             },
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors(
                 unfocusedIndicatorColor = Color.LightGray
             ),
@@ -121,8 +151,9 @@ private fun DetailEntry(
                         state.StoreList.forEach{
                             Text(
                                 text = it.storeName,
-                                modifier = Modifier.padding(8.dp)
-                                    .clickable{
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .clickable {
                                         onStoreChange.invoke(it.storeName)
                                         onDialogDismissed(!state.isScreenDialogDismissed)
                                     }
@@ -149,18 +180,68 @@ private fun DetailEntry(
             Row(verticalAlignment = Alignment.CenterVertically){
                 Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
                 Spacer(modifier = Modifier.size(4.dp))
-                Text(text = toString(state.date)) //fix
+                Text(text = formatDate(state.date)) //fix
                 Spacer(modifier = Modifier.size(4.dp))
                 val mDatePicker = datePickerDialog(LocalContext.current,{date -> onDateSelected.invoke(date)})
-                IconButton({}) {
+                IconButton({mDatePicker.show()}) {
                     Icon(
                         Icons.Default.KeyboardArrowDown,
                         null
                     )
                 }
             }
+            TextField(value = state.qty,
+                onValueChange = {onQtyChange(it)},
+                label = {Text(text = "qty")},
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent
+                ),
+                shape = Shapes.large)
+        }
+        Spacer(modifier = Modifier.size(12.dp))
+        LazyRow{
+        items(category){ category: Category ->
+            CategoryItem(
+                iconRes = category.resId,
+                title = category.title,
+                selected = category == state.category
+                ){
+                onCategoryChange(category)
+            }
+            Spacer(modifier = Modifier.size(16.dp))
+        }
+        }
+        val buttonTitle = if (state.isUpdatingItem) "Update item"
+            else "Add item"
+        Button(
+            onClick= {
+                when(state.isUpdatingItem){
+                    true -> {
+                        updateItem.invoke()
+                    }
+                    false -> {
+                        saveItem.invoke()
+                    }
+                }
+                navigateUp.invoke()
+            },
+            modifier= Modifier.fillMaxWidth(),
+            enabled = state.item.isNotEmpty() && state.store.isNotEmpty() && state.qty.isNotEmpty(),
+            shape = Shapes.large
+        ){
+            Text(text = buttonTitle)
         }
     }
+}
+
+private fun formatDate(date: Date):String {
+    val date = Date()
+    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val formatted = formatter.format(date)
+    return formatted
 }
 
 @Composable
@@ -186,3 +267,20 @@ fun datePickerDialog(
 
 }
 
+@Composable
+@Preview(showSystemUi = true)
+fun PrevDetailEntry(){
+    DetailEntry(
+        state = DetailState(),
+        onDateSelected = {},
+        onStoreChange = {},
+        onItemChange = {},
+        onQtyChange = {},
+        onCategoryChange = {},
+        onDialogDismissed = {},
+        onSaveStore = {},
+        updateItem = {},
+        saveItem = {},
+        navigateUp = {},
+    )
+}
