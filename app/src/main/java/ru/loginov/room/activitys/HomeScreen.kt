@@ -26,7 +26,11 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
@@ -76,11 +80,40 @@ fun HomeScreen(
                 }
             }
             items(homeState.items){
-                ShoppingItems(item = it,
-                    isChecked = it.item.isChecked,
-                    onCheckedChange = homeViewModel::onItemCheckedChange) {
-                    onNavigate.invoke(it.item.id)
-                }
+                val dismissState = rememberSwipeToDismissBoxState(
+                    confirmValueChange = { dismissValue ->
+                        // Логика: если смахивание завершено (например, EndToStart), выполняем действие
+                        if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
+                            // Удалить элемент
+                            true // true - подтвердить удаление, false - отменить
+                        } else {
+                            false
+                        }
+                    }
+                )
+                SwipeToDismissBox(
+                    state = dismissState,
+                    backgroundContent = {
+                        Surface(
+                            Modifier.fillMaxWidth(), color = Color.Red
+                        ){
+
+                        }
+                    },
+                    content = {
+                        ShoppingItems(item = it,
+                            isChecked = it.item.isChecked,
+                            onCheckedChange = homeViewModel::onItemCheckedChange) {
+                            onNavigate.invoke(it.item.id)
+                        }
+                    }
+                )
+
+//                ShoppingItems(item = it,
+//                    isChecked = it.item.isChecked,
+//                    onCheckedChange = homeViewModel::onItemCheckedChange) {
+//                    onNavigate.invoke(it.item.id)
+//                }
             }
         }
 
