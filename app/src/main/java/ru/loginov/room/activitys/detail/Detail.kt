@@ -202,6 +202,8 @@ private fun DetailEntry(
                 shape = Shapes.large)
         }
         Spacer(modifier = Modifier.size(12.dp))
+
+
         LazyRow{
         items(category){ category: Category ->
             CategoryItem(

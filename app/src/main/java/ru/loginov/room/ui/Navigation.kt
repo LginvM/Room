@@ -11,22 +11,22 @@ import ru.loginov.room.activitys.HomeScreen
 import ru.loginov.room.activitys.detail.DetailScreen
 
 enum class Routes{
-    Home,
-    Detail
+    First,
+    Second
 }
 
 @Composable
 fun JetShoppingNavigation(
     navHostController: NavHostController = rememberNavController()
 ){
-    NavHost(navHostController , startDestination = Routes.Home.name){
-        composable(route = Routes.Home.name){
+    NavHost(navHostController , startDestination = Routes.First.name){
+        composable(route = Routes.First.name){
             HomeScreen ( {
-                id -> navHostController.navigate(route="${Routes.Detail.name}?id=$id")
+                id -> navHostController.navigate(route="${Routes.Second.name}?id=$id")
             } )
         }
         composable(
-            route = "${Routes.Detail.name}?id={id}",
+            route = "${Routes.Second.name}?id={id}",
             arguments = listOf(navArgument("id"){type = NavType.IntType})
         ){
             val id = it.arguments?.getInt("id") ?: -1
